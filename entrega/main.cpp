@@ -10,16 +10,20 @@
 
 AsyncWebServer server(80);
 
+// pin atribution
 const int trigPin = D5;
 const int echoPin = D2;
 const int redLed = D7;
 const int greenLed = D9;
 
+// network settings
 const char* ssid = "Gustavo";
 const char* password = "gustavo1234";
 
+// html input param
 const char* PARAM_INPUT_1 = "input1";
 
+// html page
 const char index_html[] PROGMEM = R"rawliteral(
   <!DOCTYPE HTML><html><head>
     <title>ESP Input Form</title>
@@ -44,6 +48,7 @@ const char index_html[] PROGMEM = R"rawliteral(
   digitalWrite(trigPin, LOW);
 }
 
+// Distance break point number
 int distanceBreakPoint = 20;
 
 
@@ -125,14 +130,15 @@ void setup() {
 
 
 void loop() {
+  // sending sensor waves
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
 
+  // wave data
   long dur = pulseIn(echoPin, HIGH, 30000);
-
   int raw = digitalRead(echoPin);
   Serial.print("Echo raw: ");
   Serial.print(raw);
@@ -144,6 +150,7 @@ void loop() {
     return;
   }
 
+  // converting data recived
   float dist = dur * 0.034 / 2.0;
   Serial.print("Object Distance: ");
   Serial.print(dist);
@@ -153,6 +160,7 @@ void loop() {
   Serial.print(dist);
   Serial.println(" cm");
 
+  // aply changes if needed
   if (dist <= distanceBreakPoint) {
     digitalWrite(greenLed, LOW);
     digitalWrite(redLed, HIGH);
