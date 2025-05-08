@@ -1,50 +1,51 @@
-const int trigPin = D5;
-const int echoPin = D2;
-const int redLed = D7;
-const int greenLed = D9;
+// Setting pin numbers
+const int trigPin = D3;
+const int echoPin = D4;
+const int redLed = D5;
+const int greenLed = D11;
+// Default distance limit
+const int distanceLimit = 20;
 
 
 void setup() {
-  Serial.begin(9600);
-  pinMode(trigPin, OUTPUT);
-  pinMode(echoPin, INPUT);
-  pinMode(redLed, OUTPUT);
-  pinMode(greenLed, OUTPUT);
-  digitalWrite(greenLed, HIGH);
-  digitalWrite(trigPin, LOW);
+    Serial.begin(115200);
+    // Loading pins
+    pinMode(trigPin, OUTPUT);
+    pinMode(echoPin, INPUT);
+    pinMode(redLed, OUTPUT);
+    pinMode(greenLed, OUTPUT);
+    // Sending start signals
+    digitalWrite(redLed, HIGH);
+    digitalWrite(greenLed, LOW);
+    Serial.println("Programa iniciado");
 }
 
 void loop() {
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
+    long dur = pulseIn(echoPin, HIGH, 30000);
 
-  long dur = pulseIn(echoPin, HIGH, 30000);
+    int raw = digitalRead(echoPin);
+    Serial.print("Echo raw: ");
+    Serial.print(raw);
+    Serial.print(" | Duration: ");
+    Serial.println(dur);
 
-  int raw = digitalRead(echoPin);
-  Serial.print("Echo raw: ");
-  Serial.print(raw);
-  Serial.print(" | Duration: ");
-  Serial.println(dur);
+    if (dur == 0) {
+      Serial.println("Sem pulso detectado");
+      delay(200);
+      return;
+    }
+    float dist = dur * 0.034 / 2.0;
+    Serial.print("Dist: ");
+    Serial.print(dist);
+    Serial.println(" cm");
 
-  if (dur == 0) {
-    Serial.println("Sem pulso detectado");
-    return;
-  }
-  float dist = dur * 0.034 / 2.0;
-  Serial.print("Dist: ");
-  Serial.print(dist);
-  Serial.println(" cm");
+    if (dist <= distanceLimit) {
+      digitalWrite(greenLed, LOW);
+      digitalWrite(redLed, HIGH);
+    } else {
+      digitalWrite(redLed, LOW);
+      digitalWrite(greenLed, HIGH);
+    }
 
-  if (dist <= 20) {
-    digitalWrite(greenLed, LOW);
-    digitalWrite(redLed, HIGH);
-  } else {
-    digitalWrite(greenLed, LOW);
-    digitalWrite(redLed, HIGH);
-  }
-
-  delay(1000);
+    delay(500);
 }
